@@ -48,14 +48,14 @@ int main(int argc, char **argv) {
 
   // execute paralel
   gettimeofday(&st,NULL);
-  impBitonicSortPar(d_arr,n,t);
+  impBitonicSortPar(d_arr,dummy_n,t);
   gettimeofday(&et,NULL);
   int elapsed_paralel = ((et.tv_sec - st.tv_sec) * 1000000) + (et.tv_usec - st.tv_usec);
   printf("Execution paralel time: %d micro sec\n",elapsed_paralel);
 
   // execute serial
   gettimeofday(&st,NULL);
-  impBitonicSortSer(arr_ser,n);
+  impBitonicSortSer(arr_ser,dummy_n);
   gettimeofday(&et,NULL);
   int elapsed_serial = ((et.tv_sec - st.tv_sec) * 1000000) + (et.tv_usec - st.tv_usec);
   printf("Execution serial time: %d micro sec\n",elapsed_serial);
@@ -137,9 +137,8 @@ Imperative paralel bitonic sort
 */
 void impBitonicSortPar(int* a, int n, int t) {
   int j,k;
-  int dummy_n = getPowTwo(n);
 
-  for (k=2; k<=dummy_n; k=2*k) {
+  for (k=2; k<=n; k=2*k) {
     for (j=k>>1; j>0; j=j>>1) {
       compareAndSwap<<<n/t,t>>>(a, n, k, j);
       cudaDeviceSynchronize();
@@ -149,9 +148,8 @@ void impBitonicSortPar(int* a, int n, int t) {
 
 void impBitonicSortSer(int* a, int n){
   int i,j,k;
-  int dummy_n = getPowTwo(n);
 
-  for (k=2; k<=dummy_n; k=2*k) {
+  for (k=2; k<=n; k=2*k) {
     for (j=k>>1; j>0; j=j>>1) {
       for (i=0; i<n; i++) {
         int ij=i^j;
