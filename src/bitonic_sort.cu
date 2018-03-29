@@ -4,18 +4,16 @@
 #include <string.h>
 
 struct timeval st, et;
-__device__
-void swapPar(int*, int, int);
-void swapSer(int*, int, int);
+__device__ __host__ void swap(int*, int, int);
 void rng(int*, int);
 int getMax(int*, int);
 void buildDummy(int*, int, int, int);
-__global__
-void compareAndSwap(int*, int, int, int);
+__global__ void compareAndSwap(int*, int, int, int);
 void impBitonicSortPar(int*, int, int);
 void impBitonicSortSer(int*, int);
 int getPowTwo(int);
 void writeToFile(int*, int, char*);
+bool isValid(int*, int*, int);
 
 int main(int argc, char **argv) {
   int n, dummy_n, t = 512;
@@ -61,9 +59,21 @@ int main(int argc, char **argv) {
   printf("Execution serial time: %d micro sec\n",elapsed_serial);
 
   // calculate speedup
-  printf("Speedup : %.3f\n",(float)elapsed_serial/elapsed_paralel);
+  float speedup = (float)elapsed_serial/elapsed_paralel;
+  printf("Speedup : %.3f\n",speedup);
+  // calculate efficiency
+  float eff = 100*speedup/t;
+  printf("Efficiency : %.3f%\n",eff);
 
   cudaMemcpy(arr, d_arr, dummy_n*sizeof(int), cudaMemcpyDeviceToHost);
+
+  // check test
+  bool valid = isValid(arr_ser,arr,dummy_n);
+  if(valid){
+    printf("Test Passed\n");
+  } else {
+    printf("Test Failed\n");
+  }
   writeToFile(arr,n,"./data/output");
   free(arr);
   free(arr_ser);
@@ -101,34 +111,21 @@ void buildDummy(int* arr,int N,int dummy_n, int max_x){
   }
 }
 
-__device__
-void swapPar(int* a, int i, int j) {
+__device__ __host__ void swap(int* a, int i, int j) {
   int t;
   t = a[i];
   a[i] = a[j];
   a[j] = t;
 }
 
-void swapSer(int* a, int i, int j) {
-  int t;
-  t = a[i];
-  a[i] = a[j];
-  a[j] = t;
-}
-
-__global__
-void compareAndSwap(int* a, int n, int k, int j){
+__global__ void compareAndSwap(int* a, int n, int k, int j){
   int i = threadIdx.x + blockDim.x * blockIdx.x;
-
-  while(i<n){
-    int ij=i^j;
-    if ((ij)>i) {
-      // monotonic increasing
-      if ((i&k)==0 && a[i] > a[ij]) swapPar(a,i,ij);
-      // monotonic decreasing
-      if ((i&k)!=0 && a[i] < a[ij]) swapPar(a,i,ij);
-    }
-    i += blockDim.x;
+  int ij=i^j;
+  if ((ij)>i) {
+    // monotonic increasing
+    if ((i&k)==0 && a[i] > a[ij]) swap(a,i,ij);
+    // monotonic decreasing
+    if ((i&k)!=0 && a[i] < a[ij]) swap(a,i,ij);
   }
 }
 
@@ -137,10 +134,13 @@ Imperative paralel bitonic sort
 */
 void impBitonicSortPar(int* a, int n, int t) {
   int j,k;
-
+  int blocks = (n+t-1)/t;
+  int threads = t;
+  dim3 grid_dim(blocks,1);
+  dim3 block_dim(threads,1);
   for (k=2; k<=n; k=2*k) {
     for (j=k>>1; j>0; j=j>>1) {
-      compareAndSwap<<<n/t,t>>>(a, n, k, j);
+      compareAndSwap<<<grid_dim,block_dim>>>(a, n, k, j);
       cudaDeviceSynchronize();
     }
   }
@@ -155,9 +155,9 @@ void impBitonicSortSer(int* a, int n){
         int ij=i^j;
         if ((ij)>i) {
           // monotonic increasing
-          if ((i&k)==0 && a[i] > a[ij]) swapSer(a,i,ij);
+          if ((i&k)==0 && a[i] > a[ij]) swap(a,i,ij);
           // monotonic decreasing
-          if ((i&k)!=0 && a[i] < a[ij]) swapSer(a,i,ij);
+          if ((i&k)!=0 && a[i] < a[ij]) swap(a,i,ij);
         }
       }
     }
@@ -168,4 +168,11 @@ int getPowTwo(int n){
   int d=1;
   while (d>0 && d<n) d<<=1;
   return d;
+}
+
+bool isValid(int* arr1, int* arr2, int n){
+  for(int i=0; i<n; i++){
+    if(arr1[i]!=arr2[i]) return 0;
+  }
+  return 1;
 }
