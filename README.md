@@ -83,7 +83,7 @@ Berikut adalah hasil dari pengukuran kinerja dengan jumlah elemen 512, 1.024, 4.
 
 
 | | N | Percobaan 1 | Percobaan 2 | Percobaan 3 | Avg | Speedup | Eficiency |
-| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
 | **Serial time** (micro second) | 512 | 278 | 277 | 277 | 277.333344 | - | - |
 | **Paralel time** (micro second) | 512 | 660 | 650 | 642 | 650.666687 | 0.426x | 0.083% |
 | **Serial time** (micro second) | 1024 | 671 | 651 | 660 | 660.666687 | - | - |
