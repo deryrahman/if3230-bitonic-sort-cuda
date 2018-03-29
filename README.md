@@ -94,7 +94,7 @@ Berikut adalah hasil dari pengukuran kinerja dengan jumlah elemen 512, 1.024, 4.
 | **Paralel time** (micro second) | 65536 | 2402 | 2070 | 1947 | 2139.666748 | 44.926x | 8.775% |
 | **Serial time** (micro second) | 262144 | 474848 | 474508 | 474467 | 474607.656250 | - | - |
 | **Paralel time** (micro second) | 262144 | 2982 | 2926 | 2922 | 2943.333252 | 161.248x | 31.494% |
-| **Serial time** (micro second) | 1048576 | 2303411 | 2305610 | 2303725 | 2304248.750000 | - | - |s
+| **Serial time** (micro second) | 1048576 | 2303411 | 2305610 | 2303725 | 2304248.750000 | - | - |
 | **Paralel time** (micro second) | 1048576 | 9224 | 9229 | 9150 | 9201.000000 | 250.435x | 48.913% |
 | **Serial time** (micro second) | 8388608 | 24142362 | 24158813 | 24146473 | 24149216.000000 | - | - |
 | **Paralel time** (micro second) | 8388608 | 69294 | 68570 | 71234 | 69699.335938 | 346.477x | 67.671% |
