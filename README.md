@@ -1,6 +1,6 @@
 # Bitonic Sort
 
-Tugas OpenMP - Bitonic Sort. Praktikum1_K01_13515097
+Tugas CUDA - Bitonic Sort. Praktikum3_K01_13515097
 
 ## Petunjuk penggunaan program
 
